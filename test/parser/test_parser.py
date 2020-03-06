@@ -25,8 +25,6 @@ from src.parser.select_statement import SelectStatement
 from src.expression.abstract_expression import ExpressionType
 from src.parser.table_ref import TableRef, TableInfo
 
-from src.utils.logging_manager import LoggingManager
-
 
 class ParserTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -51,8 +49,6 @@ class ParserTests(unittest.TestCase):
             self.assertIsInstance(
                 eva_statement_list[0], AbstractStatement)
 
-            LoggingManager().log(eva_statement_list[0])
-
     def test_single_statement_queries(self):
         parser = Parser()
 
@@ -73,8 +69,6 @@ class ParserTests(unittest.TestCase):
             self.assertEqual(len(eva_statement_list), 1)
             self.assertIsInstance(
                 eva_statement_list[0], AbstractStatement)
-
-            LoggingManager().log(eva_statement_list[0])
 
     def test_multiple_statement_queries(self):
         parser = Parser()

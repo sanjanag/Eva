@@ -15,7 +15,14 @@
 from src.parser.table_ref import TableInfo
 from src.catalog.catalog_manager import CatalogManager
 from typing import List
+
+from src.expression.abstract_expression import AbstractExpression
 from src.expression.tuple_value_expression import ExpressionType
+
+from src.parser.create_statement import ColumnDefinition
+
+from src.utils.logging_manager import LoggingLevel
+from src.utils.logging_manager import LoggingManager
 
 
 def bind_table_ref(video_info: TableInfo) -> int:
@@ -35,7 +42,7 @@ def bind_table_ref(video_info: TableInfo) -> int:
     return catalog_entry_id
 
 
-def bind_columns_expr(target_columns: List['AbstractExpression']):
+def bind_columns_expr(target_columns: List[AbstractExpression]):
     if target_columns is None:
         return
 
@@ -48,16 +55,21 @@ def bind_columns_expr(target_columns: List['AbstractExpression']):
             bind_tuple_value_expr(column_exp)
 
 
-def bind_tuple_value_expr(expr: 'AbstractExpression'):
+def bind_tuple_value_expr(expr: AbstractExpression):
     catalog = CatalogManager()
     table_id, column_ids = catalog.get_table_bindings(None,
                                                       expr.table_name,
-                                                      expr.col_name)
+                                                      [expr.col_name])
     expr.table_metadata_id = table_id
+    if not isinstance(column_ids, list) or len(column_ids) == 0:
+        LoggingManager().log(
+            "Optimizer Utils:: bind_tuple_expr: \
+            Cannot bind column name provided", LoggingLevel.ERROR)
+
     expr.col_metadata_id = column_ids.pop()
 
 
-def bind_predicate_expr(predicate: 'AbstractExpression'):
+def bind_predicate_expr(predicate: AbstractExpression):
     # This function will be expanded as we add support for
     # complex predicate expressions and sub select predicates
 
@@ -67,3 +79,28 @@ def bind_predicate_expr(predicate: 'AbstractExpression'):
 
     if predicate.etype == ExpressionType.TUPLE_VALE:
         bind_tuple_value_expr(predicate)
+
+
+def create_column_metadata(col_list: List[ColumnDefinition]):
+    """Create column metadata for the input parsed column list. This function
+    will not commit the provided column into catalog table. 
+    Will only return in memory list of ColumnDataframe objects
+
+    Arguments:
+        col_list {List[ColumnDefinition]} -- parsed col list to be created
+    """
+    if isinstance(col_list, ColumnDefinition):
+        col_list = [col_list]
+
+    result_list = []
+    for col in col_list:
+        if col is None:
+            LoggingManager().log(
+                "Empty column while creating column metadata",
+                LoggingLevel.ERROR)
+            result_list.append(col)
+        result_list.append(
+            CatalogManager().create_column_metadata(
+                col.name, col.type, col.dimension))
+
+    return result_list

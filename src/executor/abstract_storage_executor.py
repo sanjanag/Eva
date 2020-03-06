@@ -12,20 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from src.expression.abstract_expression import AbstractExpression
-from src.planner.abstract_scan_plan import AbstractScan
-from src.planner.types import PlanNodeType
+from abc import ABC
+
+from src.executor.abstract_executor import AbstractExecutor
+from src.planner.storage_plan import StoragePlan
 
 
-class PPScanPlan(AbstractScan):
+class AbstractStorageExecutor(AbstractExecutor, ABC):
     """
-    This plan is used for storing information required for probabilistic
-    predicate.
-
-    Arguments:
-        predicate (AbstractExpression): A predicate expression used for
-        filtering frames
+    Abstract executor for storage. This executor returns the batch frames
+    from the storage layer.
     """
 
-    def __init__(self, predicate: AbstractExpression):
-        super().__init__(PlanNodeType.PP_FILTER, predicate)
+    def __init__(self, node: StoragePlan):
+        super().__init__(node)

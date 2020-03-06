@@ -18,8 +18,8 @@ import numpy as np
 
 from src.models.storage.batch import FrameBatch
 from src.models.storage.frame import Frame
-from src.query_executor.pp_executor import PPExecutor
-from ..query_executor.utils import DummyExecutor
+from src.executor.pp_executor import PPExecutor
+from ..executor.utils import DummyExecutor
 
 
 class PPScanExecutorTest(unittest.TestCase):
@@ -41,5 +41,5 @@ class PPScanExecutorTest(unittest.TestCase):
         predicate_executor.append_child(DummyExecutor([batch]))
 
         expected = FrameBatch(frames=[frame_3], info=None)
-        filtered = list(predicate_executor.next())[0]
+        filtered = list(predicate_executor.exec())[0]
         self.assertEqual(expected, filtered)

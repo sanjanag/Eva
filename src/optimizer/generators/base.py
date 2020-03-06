@@ -12,20 +12,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from src.expression.abstract_expression import AbstractExpression
-from src.planner.abstract_scan_plan import AbstractScan
-from src.planner.types import PlanNodeType
+from abc import ABC, abstractmethod
+
+from src.optimizer.operators import Operator
+from src.planner.abstract_plan import AbstractPlan
 
 
-class PPScanPlan(AbstractScan):
-    """
-    This plan is used for storing information required for probabilistic
-    predicate.
+class Generator(ABC):
 
-    Arguments:
-        predicate (AbstractExpression): A predicate expression used for
-        filtering frames
-    """
+    @abstractmethod
+    def build(self, operator: Operator) -> AbstractPlan:
+        """
+        Generates the physical plan from the Logical plan (Operator tree)
 
-    def __init__(self, predicate: AbstractExpression):
-        super().__init__(PlanNodeType.PP_FILTER, predicate)
+        Arguments:
+            operator (Operator): the logical operator tree.
+
+        Returns:
+            `AbstractPlan`: the plan constructed by traversing the Operator
+            tree.
+        """
+        pass
+
+

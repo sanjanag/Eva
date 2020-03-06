@@ -15,7 +15,7 @@
 from typing import Iterator
 
 from src.models.storage.batch import FrameBatch
-from src.query_executor.abstract_executor import AbstractExecutor
+from src.executor.abstract_executor import AbstractExecutor
 from src.planner.pp_plan import PPScanPlan
 
 
@@ -37,7 +37,7 @@ class PPExecutor(AbstractExecutor):
     def validate(self):
         pass
 
-    def next(self) -> Iterator[FrameBatch]:
+    def exec(self) -> Iterator[FrameBatch]:
         child_executor = self.children[0]
         for batch in child_executor.next():
             outcomes = self.predicate.evaluate(batch)

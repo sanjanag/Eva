@@ -14,9 +14,9 @@
 # limitations under the License.
 from typing import Iterator
 
-from src.loaders.video_loader import VideoLoader
+from src.loaders import Loader
 from src.models.storage.batch import FrameBatch
-from src.query_executor.abstract_storage_executor import \
+from src.executor.abstract_storage_executor import \
     AbstractStorageExecutor
 from src.planner.storage_plan import StoragePlan
 
@@ -32,15 +32,17 @@ class DiskStorageExecutor(AbstractStorageExecutor):
 
     def __init__(self, node: StoragePlan):
         super().__init__(node)
-        self.storage = VideoLoader(node.video,
-                                   batch_size=node.batch_size,
-                                   skip_frames=node.skip_frames,
-                                   limit=node.limit,
-                                   offset=node.offset)
+        self.storage = Loader(node.video,
+                              batch_size=node.batch_size,
+                              skip_frames=node.skip_frames,
+                              limit=node.limit,
+                              offset=node.offset,
+                              shard=node.curr_shard,
+                              total_shards=node.total_shards)
 
     def validate(self):
         pass
 
-    def next(self) -> Iterator[FrameBatch]:
+    def exec(self) -> Iterator[FrameBatch]:
         for batch in self.storage.load():
             yield batch
