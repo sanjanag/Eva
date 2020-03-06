@@ -64,7 +64,7 @@ sh ./script/antlr4/setup.sh
    python script/formatting/formatter.py
 ```
 
-4. Refer [google codestyle guide](https://google.github.io/styleguide/pyguide.html) for documentation of code.
+4. Refer [google styleguide](https://google.github.io/styleguide/pyguide.html) for documentation of code.
 
 Please look up the [contributing guide](https://github.com/georgia-tech-db/eva/blob/master/CONTRIBUTING.md#development) for details.
 
